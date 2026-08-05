@@ -1,0 +1,32 @@
+/*
+ ////////////////////////////////////////////////////////////
+ // Tooh - style.css
+ // by Pheeraphat Sawangphian
+ ////////////////////////////////////////////////////////////
+*/
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+canvas {
+    display: block;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: center;
+    background-color: #808080;
+}
+
+td {
+    border: 1px solid black;
+    text-align: center;
+    vertical-align: center;
+}
