@@ -1,10 +1,12 @@
+////////////////////////////////////////////////////////////
+// Game Library Version 06.08.26.1035
+// by Pheeraphat Sawangphian
+////////////////////////////////////////////////////////////
+
 'use strict';
 
 var gameLibrary = null;
 
-////////////////////////////////////////////////////////////
-// game library version 26.02.26.1715
-////////////////////////////////////////////////////////////
 class GameLibrary {
     // constants
     static get NONE()                   {return -1;}
@@ -545,9 +547,9 @@ class GameLibrary {
     }
 
     normalize(value, start, end, isIncludeEnd) {
-        let width = end - start;
+        let w = end - start;
         let offset = value - start;
-        let result = (offset - (floor(offset / width) * width)) + start;
+        let result = (offset - (floor(offset / w) * w)) + start;
 
         if (!isIncludeEnd && (result == -start || result == end)) {
             result = start;
@@ -1821,13 +1823,13 @@ class GameLibrary {
         this.camera.centerPoint.y = this.screenToVideoY(this.displayCenterPoint.y);
 
         // video crop
-        let length = 0;
+        let offset = 0;
         let right = 0;
         let bottom = 0;
 
         if (this.camera.screenRect.x <= 0) {
-            length = 0 - this.camera.screenRect.x;
-            right = this.screenToVideoX(0 + this.camera.screenRect.width - 1 - (length * 2));
+            offset = 0 - this.camera.screenRect.x;
+            right = this.screenToVideoX(0 + this.camera.screenRect.width - 1 - (offset * 2));
             this.camera.cropRect.x = this.screenToVideoX(0);
             this.camera.cropRect.width = right - this.camera.cropRect.x;
         } else {
@@ -1837,8 +1839,8 @@ class GameLibrary {
         }
 
         if (this.camera.screenRect.y <= 0) {
-            length = 0 - this.camera.screenRect.y;
-            bottom = this.screenToVideoY(0 + this.camera.screenRect.height - 1 - (length * 2));
+            offset = 0 - this.camera.screenRect.y;
+            bottom = this.screenToVideoY(0 + this.camera.screenRect.height - 1 - (offset * 2));
             this.camera.cropRect.y = this.screenToVideoY(0);
             this.camera.cropRect.height = bottom - this.camera.cropRect.y;
         } else {
@@ -3137,7 +3139,7 @@ class GameImage {
 ////////////////////////////////////////////////////////////
 class GameVector {
     constructor() {
-        this.zeroVector = this.create();
+        this.zeroVector = this.create(0, 0, 0);
     }
 
     add(v0, v1) {
@@ -3148,7 +3150,7 @@ class GameVector {
         return v0.angleBetween(v1);
     }
 
-    create(x = 0, y = 0, z = 0) {
+    create(x = 0, y = 0, z = 1) {
         return createVector(x, y, z);
     }
 
@@ -3579,8 +3581,8 @@ class GameTextOver {
     }
 
     render() {
-        let scale = (this.scale > 0.0) ? this.scale : this.parent.imageScale;
-        let fontSize = this.fontSize * scale;
+        let imageScale = (this.scale > 0.0) ? this.scale : this.parent.imageScale;
+        let fontSize = this.fontSize * imageScale;
         let textString = "";
         let textColor = null;
 
@@ -3638,10 +3640,10 @@ class GameTextOver {
     }
 
     update() {
-        let scale = (this.scale > 0.0) ? this.scale : this.parent.imageScale;
-        let fontSize = this.fontSize * scale;
+        let imageScale = (this.scale > 0.0) ? this.scale : this.parent.imageScale;
+        let fontSize = this.fontSize * imageScale;
         let moveHeight = 0.0;
-        let floatingHeight = this.floatingHeight * scale;
+        let floatingHeight = this.floatingHeight * imageScale;
         let t = 0;
         this.counter = 0;
 
@@ -3850,17 +3852,17 @@ class GameCookie {
     }
 
     createKey(sectionName, valueName) {
-        let key = this.key;
+        let keyString = this.key;
 
         if (sectionName && sectionName.length > 0) {
-            key += "." + sectionName;
+            keyString += "." + sectionName;
         }
 
         if (valueName && valueName.length > 0) {
-            key += "." + valueName;
+            keyString += "." + valueName;
         }
 
-        return key;
+        return keyString;
     }
 
     deleteHighscore(isConsoleLog) {
@@ -3878,13 +3880,13 @@ class GameCookie {
     }
 
     deleteValue(sectionName, valueName) {
-        let key = this.createKey(sectionName, valueName);
+        let keyString = this.createKey(sectionName, valueName);
 
         if (this.isConsoleLogVisibled) {
-            console.log(key);
+            console.log(keyString);
         }
 
-        removeItem(key);
+        removeItem(keyString);
     }
 
     deleteSection(sectionName) {
@@ -3943,18 +3945,18 @@ class GameCookie {
     }
 
     loadValue(sectionName, valueName, defaultValue) {
-        let key = this.createKey(sectionName, valueName);
-        let value = getItem(key);
+        let keyString = this.createKey(sectionName, valueName);
+        let value = getItem(keyString);
 
         if (value == null) {
             value = defaultValue;
 
             if (this.isConsoleLogVisibled) {
-                console.log(key, "=", defaultValue, "(default)");
+                console.log(keyString, "=", defaultValue, "(default)");
             }
         } else {
             if (this.isConsoleLogVisibled) {
-                console.log(key, "=", value);
+                console.log(keyString, "=", value);
             }
         }
 
@@ -3999,13 +4001,13 @@ class GameCookie {
     }
 
     saveValue(sectionName, valueName, value) {
-        let key = this.createKey(sectionName, valueName);
+        let keyString = this.createKey(sectionName, valueName);
 
         if (this.isConsoleLogVisibled) {
-            console.log(key, "=", value);
+            console.log(keyString, "=", value);
         }
 
-        storeItem(key, value);
+        storeItem(keyString, value);
     }
 
     setKey(key) {
@@ -4122,13 +4124,13 @@ class GameNumber {
     }
 
     getPixelSize(str, digit0ImageArrayIndex, spacesBetweenDigits) {
-        let length = this.parent.strlen(str);
+        let stringLength = this.parent.strlen(str);
         let x = 0;
         let scaledHeight = 0;
         let digit0ImageArrayOffset = digit0ImageArrayIndex - 48;
 
-        if (length > 0) {
-            for (let i = 0; i < length; i++) {
+        if (stringLength > 0) {
+            for (let i = 0; i < stringLength; i++) {
                 let ch = this.parent.charAt(str, i);
                 let imageIndex = this.parent.unchar(ch) + digit0ImageArrayOffset;
                 let scaledWidth = this.parent.scale(this.parent.gameImageArray[imageIndex].width);
@@ -4142,12 +4144,12 @@ class GameNumber {
     }
 
     render(x, y, str, digit0ImageArrayIndex, spacesBetweenDigits) {
-        let length = this.parent.strlen(str);
+        let stringLength = this.parent.strlen(str);
         let pixelWidth = 0;
         let digit0ImageArrayOffset = digit0ImageArrayIndex - 48;
 
-        if (length > 0) {
-            for (let i = 0; i < length; i++) {
+        if (stringLength > 0) {
+            for (let i = 0; i < stringLength; i++) {
                 let ch = this.parent.charAt(str, i);
                 let imageIndex = this.parent.unchar(ch) + digit0ImageArrayOffset;
                 let scaledWidth = this.parent.scale(this.parent.gameImageArray[imageIndex].width);
