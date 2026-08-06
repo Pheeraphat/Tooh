@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 06.08.26.1035
+// Game Library Version 06.08.26.1048
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -3139,7 +3139,7 @@ class GameImage {
 ////////////////////////////////////////////////////////////
 class GameVector {
     constructor() {
-        this.zeroVector = this.create(0, 0, 0);
+        this.zeroVector = this.create();
     }
 
     add(v0, v1) {
@@ -3150,7 +3150,7 @@ class GameVector {
         return v0.angleBetween(v1);
     }
 
-    create(x = 0, y = 0, z = 1) {
+    create(x = 0, y = 0, z = 0) {
         return createVector(x, y, z);
     }
 
@@ -3160,6 +3160,14 @@ class GameVector {
 
     dist(v0, v1) {
         return p5.Vector.dist(v0, v1);
+    }
+
+    div(v0, v1) {
+        if (v1.z == 0) {
+            v1.z = 1;
+        }
+
+        return p5.Vector.div(v0, v1);
     }
 
     dot(v0, v1) {
