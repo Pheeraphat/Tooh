@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 06.08.26.1048
+// Game Library Version 07.08.26.1038
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -742,7 +742,7 @@ class GameLibrary {
         this.gameMode = gameMode;
         this.isTouchBegan = false;
         this.isTouchMoved = false;
-        this.touchPoint.set(GameLibrary.NONE, GameLibrary.NONE);
+        this.touchPoint.set(GameLibrary.NONE, GameLibrary.NONE, 0);
         this.onChangeGameMode(gameMode); // user defined prototype
     }
 
@@ -1186,10 +1186,10 @@ class GameLibrary {
     preload() {
         this.marginPoint.set(0, 0);
         this.savedCanvasPoint.set(0, 0);
-        this.mousePoint.set(0, 0);
+        this.mousePoint.set(0, 0, 0);
 
         this.resetRelativeTouch();
-        this.touchPoint.set(GameLibrary.NONE, GameLibrary.NONE);
+        this.touchPoint.set(GameLibrary.NONE, GameLibrary.NONE, 0);
         this.fpsScale = 10.0;
 
         this.setTargetFrameRate(this.targetFrameRate);
@@ -1411,8 +1411,8 @@ class GameLibrary {
     }
 
     renderArrow(fromPoint, toPoint, arrowHeadSize, rgb) {
-        let fromVector = this.vector.create(fromPoint.x, fromPoint.y);
-        let toVector = this.vector.create(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
+        let fromVector = this.vector.create(fromPoint.x, fromPoint.y, 0);
+        let toVector = this.vector.create(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y, 0);
 
         push();
         stroke(rgb);
@@ -1628,9 +1628,9 @@ class GameLibrary {
     }
 
     resetRelativeTouch() {
-        this.touchOffsetPoint.set(0, 0);
-        this.touchPoint.set(this.displayCenterPoint.x, this.displayCenterPoint.y);
-        this.relativeTouchPoint.set(this.touchPoint.x + this.touchOffsetPoint.x, this.touchPoint.y + this.touchOffsetPoint.y);
+        this.touchOffsetPoint.set(0, 0, 0);
+        this.touchPoint.set(this.displayCenterPoint.x, this.displayCenterPoint.y, 0);
+        this.relativeTouchPoint.set(this.touchPoint.x + this.touchOffsetPoint.x, this.touchPoint.y + this.touchOffsetPoint.y, 0);
     }
 
     rotateImage(p5Image, topLeftX, topLeftY, width, height, angleInDegrees, pivotOffsetX, pivotOffsetY, alpha) {
