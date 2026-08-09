@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 07.08.26.1038
+// Game Library Version 2.0.20260809
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -4042,13 +4042,13 @@ class GameSound {
         }
     }
 
-    getData(soundIndex, nChannel) {
+    getData(soundIndex, channel) {
         if (this.parent.isReady) {
             this.dataArray = null;
             this.dataArraySize = 0;
 
-            if (this.isValid(soundIndex) && this.soundArray[soundIndex].buffer.numberOfChannels > nChannel) {
-                this.dataArray = this.soundArray[soundIndex].buffer.getChannelData(nChannel);
+            if (this.isValid(soundIndex) && this.soundArray[soundIndex].channels() > channel) {
+                this.dataArray = this.soundArray[soundIndex].buffer.getChannelData(channel);
                 this.dataArraySize = this.parent.getArraySize(this.dataArray);
             }
         }
@@ -4075,7 +4075,7 @@ class GameSound {
     }
 
     getNumberOfChannels(soundIndex) {
-        return (this.parent.isReady && this.isValid(soundIndex)) ? this.soundArray[soundIndex].buffer.numberOfChannels : 0;
+        return (this.parent.isReady && this.isValid(soundIndex)) ? this.soundArray[soundIndex].channels : 0;
     }
 
     isPlaying(soundIndex) {
