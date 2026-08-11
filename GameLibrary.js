@@ -1922,9 +1922,17 @@ class GameLibrary {
 
     initVideo() {
         if (this.camera.isEnabled) {
-            this.video = createCapture(VIDEO, loadedVideo => {
+            let loadingResult = createCapture(VIDEO);
+
+            if (loadingResult && typeof loadingResult.then === "function") {
+                loadingResult.then((loadedVideo) => {
+                    this.video = loadedVideo;
+                    this.isSetVideoSize = false;
+                });
+            } else {
+                this.video = loadingResult;
                 this.isSetVideoSize = false;
-            });
+            }
         } else {
             let sizeBackgroundSize = new GameSize(640, 480);
 
