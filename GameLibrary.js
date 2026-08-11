@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 2.0.20260809
+// Game Library Version 2.0.20260811
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -370,6 +370,7 @@ class GameLibrary {
 
     createGraphics(width, height, colorKey) {
         let graphics = createGraphics(width, height);
+        graphics.pixelDensity(1);
         graphics.clear();
         return graphics;
     }
@@ -513,7 +514,7 @@ class GameLibrary {
     }
 
     getPixelColor(x, y, graphics, width, height) {
-        let i = (y * width + x) * pixelDensity() * 4;
+        let i = (y * width + x) * graphics.pixelDensity() * 4;
         let r = graphics.pixels[i + 0];
         let g = graphics.pixels[i + 1];
         let b = graphics.pixels[i + 2];
@@ -664,7 +665,7 @@ class GameLibrary {
     }
 
     setPixelColor(x, y, rgb, alpha, graphics, width, height) {
-        let i = (y * width + x) * pixelDensity() * 4;
+        let i = (y * width + x) * graphics.pixelDensity() * 4;
 
         graphics.loadPixels();
         graphics.pixels[i + 0] = this.getRed(rgb);
@@ -962,7 +963,7 @@ class GameLibrary {
             this.loadingScreen.fileIndex++;
             this.loadingScreen.filename = this.hudFontFilename;
 
-            loadFont(this.hudFontFilename).then((loadedFont) => {
+            loadFont(this.hudFontFilename, loadedFont => {
                 if (loadedFont) {
                     this.font = loadedFont;
                 }
@@ -1013,7 +1014,7 @@ class GameLibrary {
             } else {
                 let filePath = this.getImageFilePath(this.imageLoadingIndex);
 
-                loadImage(filePath).then((loadedImage) => {
+                loadImage(filePath, loadedImage => {
                     if (loadedImage) {
                         this.gameImageArray[this.imageLoadingIndex] = new GameImage(loadedImage, loadedImage.width, loadedImage.height, null, 0x0000);
                     }
@@ -1035,7 +1036,6 @@ class GameLibrary {
     }
 
     loadSounds() {
-        //if (this.sound.numberOfSounds > 0 && VERSION.split(".")[0] == "1") {
         if (this.sound.numberOfSounds > 0) {
             if (this.sound.loadingIndex == 0) {
                 console.log("\npreload sounds...");
@@ -1047,17 +1047,27 @@ class GameLibrary {
             this.loadingScreen.fileIndex++;
             this.loadingScreen.filename = this.soundFilenameArray[this.sound.loadingIndex];
 
-            loadSound(this.soundFilenameArray[this.sound.loadingIndex]).then((loadedSound) => {
-                this.sound.soundArray[this.sound.loadingIndex] = loadedSound;
-                this.sound.loadingIndex++;
+            let loadingResult = loadSound(this.soundFilenameArray[this.sound.loadingIndex]);
 
-                if (this.sound.loadingIndex < this.sound.numberOfSounds && this.sound.loadingIndex < this.sound.MAX_NUMBER_OF_SOUNDS) {
-                    this.loadSounds();
-                } else {
-                    this.soundFilenameArray = null;
-                    this.setupCooldown = 500;
-                }
-            });
+            if (loadingResult && typeof loadingResult.then === "function") {
+                loadingResult.then((loadedSound) => {
+                    this.handleSoundLoaded(loadedSound);
+                });
+            } else {
+                this.handleSoundLoaded(loadingResult);
+            }
+        } else {
+            this.soundFilenameArray = null;
+            this.setupCooldown = 500;
+        }
+    }
+
+    handleSoundLoaded(loadedSound) {
+        this.sound.soundArray[this.sound.loadingIndex] = loadedSound;
+        this.sound.loadingIndex++;
+
+        if (this.sound.loadingIndex < this.sound.numberOfSounds && this.sound.loadingIndex < this.sound.MAX_NUMBER_OF_SOUNDS) {
+            this.loadSounds();
         } else {
             this.soundFilenameArray = null;
             this.setupCooldown = 500;
@@ -2633,6 +2643,7 @@ class GameCamera {
 
     create() {
         this.graphics = createGraphics(this.size.width, this.size.height);
+        this.graphics.pixelDensity(1);
     }
 
     getImage() {
@@ -3129,7 +3140,7 @@ class GameImage {
 
     getAlpha(x, y) {
         this.image.loadPixels();
-        let i = (y * this.width + x) * 4;
+        let i = (y * this.width + x) * this.image.pixelDensity() * 4;
         return this.image.pixels[i + 3];
     }
 }
@@ -3350,7 +3361,7 @@ class GameAnimation {
 
     getFrameAlpha(x, y) {
         this.frameImage.loadPixels();
-        let i = (y * this.frameImage.width + x) * 4;
+        let i = (y * this.frameImage.width + x) * this.frameImage.pixelDensity() * 4;
         return this.frameImage.pixels[i + 3];
     }
 
