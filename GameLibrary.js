@@ -4110,7 +4110,7 @@ class GameSound {
     loop(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
             this.soundArray[soundIndex].loop = true;
-            this.soundArray[soundIndex].play();
+            setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
 
@@ -4123,7 +4123,7 @@ class GameSound {
     play(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
             this.soundArray[soundIndex].loop = false;
-            this.soundArray[soundIndex].play();
+            setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
 
