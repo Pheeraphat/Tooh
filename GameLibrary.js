@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 2.0.20260811
+// Game Library Version 2.0.20260813
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -3240,7 +3240,7 @@ class GameVector {
 class GameLoadingScreen {
     constructor() {
         this.isStarted = false;
-        this.isFinished = false;
+        this.isFinished = false;
         this.isFadeOut = false;
         this.fadeOutAlpha = 0.0;
 
@@ -4117,8 +4117,7 @@ class GameSound {
 
     loop(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            this.soundArray[soundIndex].loop(true);
-            setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
+            setTimeout(() => {this.soundArray[soundIndex].loop(true);}, 1);
         }
     }
 
@@ -4130,7 +4129,6 @@ class GameSound {
 
     play(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            this.soundArray[soundIndex].loop(false);
             setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
