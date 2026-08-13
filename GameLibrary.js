@@ -4117,7 +4117,8 @@ class GameSound {
 
     loop(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            setTimeout(() => {this.soundArray[soundIndex].loop(true);}, 1);
+            this.soundArray[soundIndex].loop(true);
+            setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
 
