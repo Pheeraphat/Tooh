@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Game Library Version 2.0.20260813
+// Game Library Version 2.0.20260814
 // by Pheeraphat Sawangphian
 ////////////////////////////////////////////////////////////
 
@@ -1047,46 +1047,32 @@ class GameLibrary {
             this.loadingScreen.fileIndex++;
             this.loadingScreen.filename = this.soundFilenameArray[this.sound.loadingIndex];
 
-            createAudio(this.soundFilenameArray[this.sound.loadingIndex], loadedSound => {
-                this.sound.soundArray[this.sound.loadingIndex] = loadedSound;
-                this.sound.loadingIndex++;
+            let loadingResult = loadSound(this.soundFilenameArray[this.sound.loadingIndex]);
 
-                loadedSound.hide();
-
-                if (this.sound.loadingIndex < this.sound.numberOfSounds && this.sound.loadingIndex < this.sound.MAX_NUMBER_OF_SOUNDS) {
-                    this.loadSounds();
-                } else {
-                    this.soundFilenameArray = null;
-                    this.setupCooldown = 500;
-                }
-            });
-
-//            let loadingResult = loadSound(this.soundFilenameArray[this.sound.loadingIndex]);
-//
-//            if (loadingResult && typeof loadingResult.then === "function") {
-//                loadingResult.then((loadedSound) => {
-//                    this.handleSoundLoaded(loadedSound);
-//                });
-//            } else {
-//                this.handleSoundLoaded(loadingResult);
-//            }
+            if (loadingResult && typeof loadingResult.then === "function") {
+                loadingResult.then((loadedSound) => {
+                    this.handleSoundLoaded(loadedSound);
+                });
+            } else {
+                this.handleSoundLoaded(loadingResult);
+            }
         } else {
             this.soundFilenameArray = null;
             this.setupCooldown = 500;
         }
     }
 
-//    handleSoundLoaded(loadedSound) {
-//        this.sound.soundArray[this.sound.loadingIndex] = loadedSound;
-//        this.sound.loadingIndex++;
-//
-//        if (this.sound.loadingIndex < this.sound.numberOfSounds && this.sound.loadingIndex < this.sound.MAX_NUMBER_OF_SOUNDS) {
-//            this.loadSounds();
-//        } else {
-//            this.soundFilenameArray = null;
-//            this.setupCooldown = 500;
-//        }
-//    }
+    handleSoundLoaded(loadedSound) {
+        this.sound.soundArray[this.sound.loadingIndex] = loadedSound;
+        this.sound.loadingIndex++;
+
+        if (this.sound.loadingIndex < this.sound.numberOfSounds && this.sound.loadingIndex < this.sound.MAX_NUMBER_OF_SOUNDS) {
+            this.loadSounds();
+        } else {
+            this.soundFilenameArray = null;
+            this.setupCooldown = 500;
+        }
+    }
 
     getMouseButton(button) {
         if (button == GameLibrary.NONE) {
@@ -4091,7 +4077,7 @@ class GameSound {
         let milliseconds = -1.0;
 
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            milliseconds = this.soundArray[soundIndex].elt.duration * 1000.0;
+            milliseconds = this.soundArray[soundIndex].duration() * 1000.0;
         }
 
         return milliseconds;
@@ -4101,7 +4087,7 @@ class GameSound {
         let milliseconds = -1.0;
 
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            milliseconds = this.soundArray[soundIndex].elt.currentTime * 1000.0;
+            //milliseconds = this.soundArray[soundIndex].currentTime() * 1000.0;
         }
 
         return milliseconds;
@@ -4112,11 +4098,11 @@ class GameSound {
     }
 
     isPlaying(soundIndex) {
-        return (this.parent.isReady && this.isValid(soundIndex)) ? !this.soundArray[soundIndex].elt.paused : false;
+        return (this.parent.isReady && this.isValid(soundIndex)) ? this.soundArray[soundIndex].isPlaying() : false;
     }
 
     isPaused(soundIndex) {
-        return (this.parent.isReady && this.isValid(soundIndex)) ? this.soundArray[soundIndex].elt.paused : false;
+        return (this.parent.isReady && this.isValid(soundIndex)) ? !this.soundArray[soundIndex].isPlaying() : false;
     }
 
     isValid(soundIndex) {
@@ -4125,15 +4111,14 @@ class GameSound {
 
     jump(soundIndex, milliseconds) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            this.soundArray[soundIndex].elt.currentTime = milliseconds / 1000.0;
+            this.soundArray[soundIndex].jump(milliseconds / 1000.0);
         }
     }
 
     loop(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            this.soundArray[soundIndex].elt.loop = true;
+            this.soundArray[soundIndex].loop(true);
             this.soundArray[soundIndex].play();
-            //setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
 
@@ -4145,8 +4130,7 @@ class GameSound {
 
     play(soundIndex) {
         if (this.parent.isReady && this.isValid(soundIndex)) {
-            this.soundArray[soundIndex].play();
-            //setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
+            setTimeout(() => {this.soundArray[soundIndex].play();}, 1);
         }
     }
 
